@@ -8,7 +8,8 @@
     "lint": "eslint .",
     "mstart": "react-native start",
     "test": "jest",
-    "start": "react-native webpack-start"
+    "start": "react-native webpack-start",
+    "webpack": "webpack -c webpack.config.cjs --env platform=android --env mode=development"
   },
   "dependencies": {
     "react": "18.2.0",

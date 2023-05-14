@@ -1,3 +1,4 @@
+const appJson = require('./app.json');
 const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const Repack = require('@callstack/repack');
@@ -18,9 +19,10 @@ const Repack = require('@callstack/repack');
  *            when running with `react-native start/bundle`.
  */
 module.exports = (env) => {
+  const dirname = __dirname;
   const {
     mode = 'development',
-    context = __dirname,
+    context = dirname,
     entry = './index.js',
     platform,
     minimize = mode === 'production',
@@ -28,7 +30,7 @@ module.exports = (env) => {
     bundleFilename = undefined,
     sourceMapFilename = undefined,
     assetsPath = undefined,
-    reactNativePath = require.resolve('react-native'),
+    reactNativePath = require.resolve('react-native').replace('\\index.js', ''),
   } = env;
 
   if (!platform) {
@@ -105,7 +107,7 @@ module.exports = (env) => {
     output: {
       clean: true,
       hashFunction: 'xxhash64',
-      path: path.join(__dirname, 'build/generated', platform),
+      path: path.join(dirname, 'build/generated', platform),
       filename: 'index.bundle',
       chunkFilename: '[name].chunk.bundle',
       publicPath: Repack.getPublicPath({ platform, devServer }),
@@ -173,10 +175,7 @@ module.exports = (env) => {
             loader: 'babel-loader',
             options: {
               /** Add React Refresh transform only when HMR is enabled. */
-              plugins:
-                devServer && devServer.hmr
-                  ? ['module:react-refresh/babel']
-                  : undefined,
+              plugins: devServer && devServer.hmr ? ['module:react-refresh/babel'] : undefined,
             },
           },
         },
@@ -228,6 +227,17 @@ module.exports = (env) => {
           sourceMapFilename,
           assetsPath,
         },
+        extraChunks: [
+          {
+            include: appJson.localChunks,
+            type: 'local',
+          },
+          {
+            include: appJson.remoteChunks,
+            type: 'remote',
+            outputPath: path.join('build/output', platform, 'remote'),
+          },
+        ],
       }),
     ],
   };
