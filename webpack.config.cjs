@@ -46,9 +46,9 @@ module.exports = (env) => {
    * to check its value to avoid accessing undefined value,
    * otherwise an error might occur.
    */
-  // if (devServer) {
-  //   devServer.hmr = false;
-  // }
+  if (devServer) {
+    devServer.hmr = false;
+  }
 
   /**
    * Depending on your Babel configuration you might want to keep it.
